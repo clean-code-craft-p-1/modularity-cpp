@@ -1,0 +1,36 @@
+name: Lint
+
+on: [push, pull_request]
+
+jobs:
+  inspect-code:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: prepare to install
+      run: sudo apt-get update
+    - name: python for cpplint
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.x'
+    - name: install tools
+      run: |
+        pip install cpplint
+        sudo apt-get install -y clang-tidy
+        sudo apt-get install -y cppcheck
+
+    - name: cpplint
+      run: |
+        cpplint  --filter=-legal,-build/c++17 --linelength=100 *.cpp *.h
+      continue-on-error: true
+
+    - name: clang-format
+      run: |
+        find . -name "*.cpp" -o -name "*.hpp" -o -name "*.cc" -o -name "*.h" | grep -v "build/" | xargs -I{} clang-tidy {} -- -std=c++17
+      continue-on-error: true
+
+    - name: cppcheck
+      run: |
+        cppcheck --enable=all --suppress=missingIncludeSystem --std=c++17  .
