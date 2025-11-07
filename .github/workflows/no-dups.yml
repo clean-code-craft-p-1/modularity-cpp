@@ -1,0 +1,16 @@
+name: No Duplications
+
+on: [push, pull_request]
+
+jobs:
+  nodups:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install jscpd
+      run: sudo npm install -g jscpd
+
+    - name: No Duplication beyond 5 lines
+      run:  jscpd . --gitignore --min-lines 5 --min-tokens 25 --threshold 0

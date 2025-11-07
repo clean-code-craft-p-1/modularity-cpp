@@ -1,0 +1,17 @@
+name: Limit file size
+
+on: [push, pull_request]
+
+jobs:
+  limit-size:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install lizard
+      run: pip install lizard
+
+    - name: Check size
+      run: |
+        $HOME/.local/bin/lizard | bash .github/workflows/lpar.sh 50
